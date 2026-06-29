@@ -235,7 +235,7 @@ body {
     box-shadow: 0 8px 24px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.8);
     border-radius: 12px;
     padding: 10px 16px;
-    display: flex;
+    display: none !important;
     align-items: center;
     gap: 12px;
     z-index: 100;
