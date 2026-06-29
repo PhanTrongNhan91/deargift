@@ -528,7 +528,140 @@ if (copyLinkBtn) {
             copyToast.classList.add('show');
             setTimeout(() => {
                 copyToast.classList.remove('show');
-            }, 3000);
+            }, 2000);
         });
     });
 }
+
+
+// --- 10. Logic Tương Tác Thổi Nến & Bắn Pháo Hoa Giấy (Interactive Anniversary Cake) ---
+window.addEventListener('DOMContentLoaded', () => {
+    const birthdayCandle = document.getElementById('birthdayCandle');
+    const cakeBox = document.getElementById('cakeBox');
+    const smokePuff = document.getElementById('smokePuff');
+    const wishCard = document.getElementById('wishCard');
+    const cakeInstruction = document.getElementById('cakeInstruction');
+    
+    let isCandleBlown = false;
+
+    // Hàm phát sinh hiệu ứng pháo hoa giấy và trái tim
+    function createConfettiExplosion(targetElement) {
+        const wrapper = document.querySelector('.cake-container-wrapper');
+        if (!wrapper) return;
+
+        const particleCount = 45;
+        const colors = ['#ff4d6d', '#ff758f', '#ffb7c5', '#dfb15b', '#4a90e2', '#50e3c2', '#ffffff'];
+        const shapes = ['circle', 'heart', 'star', 'rect'];
+
+        const wrapperRect = wrapper.getBoundingClientRect();
+        const targetRect = targetElement.getBoundingClientRect();
+
+        // Điểm bắn: Khoảng giữa/trên cùng của cây nến trên bánh
+        const originX = (targetRect.left - wrapperRect.left) + (targetRect.width / 2);
+        const originY = (targetRect.top - wrapperRect.top) + (targetRect.height / 3);
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('confetti-particle');
+
+            const shape = shapes[Math.floor(Math.random() * shapes.length)];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+
+            if (shape === 'circle') {
+                const size = Math.random() * 8 + 6;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.borderRadius = '50%';
+                particle.style.backgroundColor = color;
+            } else if (shape === 'rect') {
+                const w = Math.random() * 6 + 4;
+                const h = Math.random() * 10 + 6;
+                particle.style.width = `${w}px`;
+                particle.style.height = `${h}px`;
+                particle.style.backgroundColor = color;
+                particle.style.borderRadius = '1px';
+            } else if (shape === 'heart') {
+                particle.innerHTML = '<i class="fa-solid fa-heart"></i>';
+                particle.style.color = color;
+                particle.style.fontSize = `${Math.random() * 10 + 8}px`;
+            } else if (shape === 'star') {
+                particle.innerHTML = '<i class="fa-solid fa-star"></i>';
+                particle.style.color = color;
+                particle.style.fontSize = `${Math.random() * 8 + 8}px`;
+            }
+
+            particle.style.left = `${originX}px`;
+            particle.style.top = `${originY}px`;
+
+            // Hướng bắn: Góc ngẫu nhiên tỏa tròn
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * 130 + 50; // Bán kính nổ từ 50px đến 180px
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance - (Math.random() * 40 + 20); // Có xu hướng bay lên cao
+            const rotation = Math.random() * 360 + 180;
+            const scale = Math.random() * 0.5 + 0.7;
+
+            particle.style.setProperty('--tx', `${tx}px`);
+            particle.style.setProperty('--ty', `${ty}px`);
+            particle.style.setProperty('--rot', `${rotation}deg`);
+            particle.style.setProperty('--sc', scale);
+
+            particle.style.animationDuration = `${Math.random() * 0.7 + 1.0}s`;
+
+            wrapper.appendChild(particle);
+
+            // Dọn dẹp DOM sau khi hoạt ảnh kết thúc
+            setTimeout(() => {
+                particle.remove();
+            }, 1800);
+        }
+    }
+
+    if (cakeBox && birthdayCandle) {
+        cakeBox.addEventListener('click', () => {
+            if (!isCandleBlown) {
+                // Hành động THỔI NẾN
+                isCandleBlown = true;
+                birthdayCandle.classList.add('blown-out');
+
+                // Kích hoạt khói bay lên
+                if (smokePuff) {
+                    smokePuff.classList.remove('animating');
+                    void smokePuff.offsetWidth; // Force Reflow để chạy lại animation
+                    smokePuff.classList.add('animating');
+                }
+
+                // Hiện thiệp ước nguyện
+                if (wishCard) {
+                    wishCard.classList.add('revealed');
+                }
+
+                // Đổi thông điệp hướng dẫn
+                if (cakeInstruction) {
+                    cakeInstruction.innerHTML = '<i class="fa-solid fa-heart animate-pulse"></i> Chúc tình yêu của chúng ta mãi bền chặt! ❤️';
+                    cakeInstruction.style.color = '#ff4d6d';
+                    cakeInstruction.style.transform = 'scale(1.05)';
+                }
+
+                // Kích hoạt pháo hoa giấy
+                createConfettiExplosion(cakeBox);
+            } else {
+                // Hành động THẮP LẠI NẾN (Nếu muốn ước lại)
+                isCandleBlown = false;
+                birthdayCandle.classList.remove('blown-out');
+
+                // Ẩn thiệp ước nguyện
+                if (wishCard) {
+                    wishCard.classList.remove('revealed');
+                }
+
+                // Khôi phục thông điệp hướng dẫn
+                if (cakeInstruction) {
+                    cakeInstruction.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i> Bấm vào ngọn nến để thổi nến và ước nguyện nhé!';
+                    cakeInstruction.style.color = '#865439';
+                    cakeInstruction.style.transform = 'scale(1)';
+                }
+            }
+        });
+    }
+});
