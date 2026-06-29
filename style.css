@@ -1,0 +1,1702 @@
+/* --- Reset & Base Styles --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-wood: #eae0cb; /* Nền gỗ/kem ấm áp */
+    --paper-ivory: #fdfbf7; /* Màu giấy trắng ngà */
+    --ink-black: #2d2626; /* Màu mực sẫm */
+    --ink-blue: #2a4365; /* Màu mực xanh viết tay */
+    --stamp-red: #c9184a; /* Màu đỏ mực đóng dấu */
+    --tape-color: rgba(240, 230, 210, 0.5); /* Băng keo trong suốt */
+    
+    --font-serif: 'Lora', serif;
+    --font-heading: 'Playfair Display', serif;
+    --font-handwriting: 'Itim', cursive;
+    --font-cursive: 'Dancing Script', cursive;
+}
+
+body {
+    background-color: var(--bg-wood);
+    color: var(--ink-black);
+    font-family: var(--font-serif);
+    min-height: 100vh;
+    overflow: hidden; /* Khóa cuộn mặc định, điều khiển bằng js hoặc .diary-book */
+    position: relative;
+}
+
+/* --- MÀN HÌNH KHÓA (Lock Screen Overlay) --- */
+.lock-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle, #eae0cb 0%, #dbcbaf 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    transition: opacity 1s ease 0.8s, visibility 1s ease 0.8s; /* Fade out chậm hơn một chút sau khi cửa mở */
+    overflow: hidden;
+}
+
+.lock-card-container {
+    width: 360px;
+    max-width: 90%;
+    text-align: center;
+    background: rgba(253, 251, 247, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 2.5rem 1.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(134, 84, 57, 0.15);
+    z-index: 2001;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Cửa Trái Tim Đôi */
+.heart-gate {
+    position: relative;
+    width: 160px;
+    height: 140px;
+    margin-bottom: 2rem;
+    perspective: 1000px;
+}
+
+.heart-half {
+    position: absolute;
+    top: 0;
+    width: 80px;
+    height: 130px;
+    background: var(--stamp-red);
+    box-shadow: 0 6px 15px rgba(199, 24, 74, 0.25);
+    transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.heart-half.left {
+    left: 0;
+    border-radius: 80px 80px 0 80px;
+    transform-origin: left center;
+}
+
+.heart-half.right {
+    right: 0;
+    border-radius: 80px 80px 80px 0;
+    transform-origin: right center;
+}
+
+/* Ổ khóa ở tâm trái tim */
+.keyhole-icon {
+    position: absolute;
+    top: 65px; /* Giữa chiều cao 130px */
+    left: 80px; /* Giữa chiều rộng 160px */
+    transform: translate(-50%, -50%);
+    background: #fdfbf7;
+    border: 2px solid #865439;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    color: #865439;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: transform 0.8s ease, opacity 0.5s ease;
+}
+
+/* Khi mở khóa (Unlocked State) */
+.lock-screen.unlocked {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.lock-screen.unlocked .heart-half.left {
+    transform: rotateY(-130deg);
+}
+
+.lock-screen.unlocked .heart-half.right {
+    transform: rotateY(130deg);
+}
+
+.lock-screen.unlocked .keyhole-icon {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+}
+
+/* Hiệu ứng Rung Lắc khi nhập sai (Shake Error) */
+.heart-gate.shake {
+    animation: shakeGate 0.5s ease-in-out;
+}
+
+@keyframes shakeGate {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-12px); }
+    40%, 80% { transform: translateX(12px); }
+}
+
+/* Form nhập liệu màn hình khóa */
+.lock-title {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #865439;
+    margin-bottom: 0.5rem;
+}
+
+.lock-subtitle {
+    font-size: 0.85rem;
+    color: #8c887e;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+}
+
+.input-group {
+    display: flex;
+    width: 100%;
+    max-width: 260px;
+    gap: 8px;
+}
+
+#passwordInput {
+    flex-grow: 1;
+    font-family: var(--font-serif);
+    font-size: 0.95rem;
+    padding: 10px 14px;
+    border: 2px solid #c6bda8;
+    background: #fdfbf7;
+    border-radius: 30px;
+    outline: none;
+    text-align: center;
+    color: var(--ink-black);
+    transition: border-color 0.2s;
+}
+
+#passwordInput:focus {
+    border-color: #865439;
+}
+
+#unlockBtn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: var(--stamp-red);
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(199, 24, 74, 0.3);
+    transition: background 0.2s, transform 0.2s;
+}
+
+#unlockBtn:hover {
+    background: #a13d4b;
+    transform: scale(1.05);
+}
+
+.error-msg {
+    font-family: var(--font-handwriting);
+    font-size: 1.25rem;
+    color: var(--stamp-red);
+    margin-top: 1rem;
+    height: 24px;
+    font-weight: 700;
+}
+
+/* --- Floating Canvas (Cherry Blossom/Warm Dust) --- */
+#petalCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* --- Vintage Music Player --- */
+.vintage-player {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #fdfaf2;
+    border: 3px solid #865439; /* Viền gỗ */
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.8);
+    border-radius: 12px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+    max-width: 300px;
+    color: #5c3d2e;
+    transition: transform 0.3s ease;
+}
+
+.vintage-player:hover {
+    transform: translateY(-3px);
+}
+
+.player-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid #865439;
+    background: #c68b59;
+    color: #fdfaf2;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+}
+
+.player-btn:hover {
+    background: #865439;
+}
+
+.player-btn.playing {
+    animation: rotateBtn 4s linear infinite;
+}
+
+@keyframes rotateBtn {
+    100% { transform: rotate(360deg); }
+}
+
+.player-meta {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.75rem;
+    overflow: hidden;
+}
+
+.song-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.song-status {
+    font-family: var(--font-handwriting);
+    font-size: 0.95rem;
+    color: #865439;
+}
+
+/* --- Diary Book Container (Scroll Snap) --- */
+.diary-book {
+    height: 100vh;
+    overflow-y: hidden; /* Khóa cuộn khi chưa unlock. Sẽ được kích hoạt bằng JS sau khi unlock */
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    position: relative;
+    z-index: 1;
+}
+
+.diary-page {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    scroll-snap-align: start;
+    padding: 2rem 1.5rem;
+    position: relative;
+}
+
+/* --- PAGE 1: BÌA SỔ (Notebook Cover) --- */
+.page-cover {
+    background: radial-gradient(circle, #a13d4b 0%, #732635 100%);
+    box-shadow: inset 0 0 100px rgba(0,0,0,0.4);
+}
+
+.cover-content {
+    background: #732635;
+    width: 100%;
+    max-width: 480px;
+    height: 600px;
+    max-height: 85vh;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 
+        0 15px 40px rgba(0,0,0,0.5), 
+        5px 5px 0 #5c1b27,
+        10px 10px 0 #46141d;
+    border: 3px solid #dfb15b; /* Viền mạ vàng */
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.cover-border {
+    border: 1px solid rgba(223, 177, 91, 0.4);
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cover-badge {
+    font-family: var(--font-serif);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #dfb15b;
+    border: 1px solid #dfb15b;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.cover-title {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fdfbf7;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.handwritten-accent {
+    font-family: var(--font-cursive);
+    color: #dfb15b;
+    font-size: 3.5rem;
+    display: block;
+    margin-top: 0.5rem;
+}
+
+.cover-heart-lock {
+    font-size: 3.5rem;
+    color: #ff4d6d;
+    margin: 1.2rem 0;
+    filter: drop-shadow(0 0 10px rgba(255, 77, 109, 0.6));
+    animation: coverPulse 1.2s infinite alternate cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@keyframes coverPulse {
+    0% { transform: scale(0.95); filter: drop-shadow(0 0 4px rgba(255, 77, 109, 0.5)); }
+    100% { transform: scale(1.15); filter: drop-shadow(0 0 16px rgba(255, 77, 109, 0.95)); }
+}
+
+.cover-names {
+    font-family: var(--font-handwriting);
+    font-size: clamp(1.05rem, 3.2vw, 1.35rem);
+    color: #fdfbf7;
+    margin-bottom: 0.2rem;
+    display: flex;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    line-height: 1.4;
+}
+
+.names-separator {
+    color: #ff4d6d;
+    font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+    margin: 0 2px;
+    display: inline-block;
+    filter: drop-shadow(0 0 3px rgba(255, 77, 109, 0.5));
+    animation: miniHeartBeat 1.5s infinite ease-in-out;
+}
+
+@keyframes miniHeartBeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+}
+
+.nickname {
+    font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+    color: #dfb15b;
+    font-family: var(--font-handwriting);
+    font-weight: normal;
+    display: inline-block;
+}
+
+.cover-date {
+    font-family: var(--font-serif);
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    color: rgba(253, 251, 247, 0.6);
+}
+
+.scroll-prompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #dfb15b;
+}
+
+.scroll-text {
+    font-family: var(--font-handwriting);
+    font-size: 1.2rem;
+}
+
+.bounce-arrow {
+    font-size: 1.2rem;
+    animation: bounce 1.5s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(5px); }
+}
+
+/* --- TRANG GIẤY SỔ (Notebook Sheet) --- */
+.page-paper {
+    background: transparent;
+}
+
+.notebook-sheet {
+    background-color: var(--paper-ivory);
+    width: 100%;
+    max-width: 720px;
+    height: 650px;
+    max-height: 90vh;
+    border-radius: 12px;
+    box-shadow: 
+        0 10px 30px rgba(0,0,0,0.1),
+        4px 4px 0 #faf7f0,
+        8px 8px 0 #f5f0e6,
+        12px 12px 0 #ede6d8;
+    position: relative;
+    padding: 3rem 2.5rem 2.5rem 4.5rem; /* Lùi lề trái cho lò xo */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ring binder (Lò xo gáy sổ) */
+.notebook-rings {
+    position: absolute;
+    left: 20px;
+    top: 5%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    z-index: 10;
+}
+
+.ring {
+    width: 15px;
+    height: 40px;
+    background: linear-gradient(90deg, #ccc 0%, #eee 40%, #bbb 70%, #999 100%);
+    border-radius: 20px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
+    position: relative;
+}
+
+/* Lỗ đục giấy bên dưới lò xo */
+.ring::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: -8px;
+    width: 8px;
+    height: 12px;
+    background: #d8ceba; /* Khớp màu nền gỗ đè lên */
+    border-radius: 50%;
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.ring::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: -8px;
+    width: 8px;
+    height: 12px;
+    background: #d8ceba;
+    border-radius: 50%;
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.sheet-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 2;
+}
+
+/* Tiêu đề & Ngày tháng */
+.page-heading {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--ink-black);
+    margin-bottom: 0.2rem;
+    border-bottom: 2px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.4rem;
+}
+
+.diary-date {
+    font-family: var(--font-handwriting);
+    font-size: 1.3rem;
+    color: var(--stamp-red);
+    margin-bottom: 1.5rem;
+}
+
+/* --- Con dấu bưu điện cổ điển (Love Counter Stamp) --- */
+.love-stamp-container {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 5;
+}
+
+/* Tem thư răng cưa */
+.postal-stamp {
+    position: relative;
+    width: 85px;
+    height: 105px;
+    background: #fff;
+    padding: 4px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transform: rotate(5deg);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Hiệu ứng răng cưa CSS */
+.stamp-serrated-edges {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    background-image: 
+        radial-gradient(circle, transparent 60%, white 62%),
+        radial-gradient(circle, transparent 60%, white 62%),
+        radial-gradient(circle, transparent 60%, white 62%),
+        radial-gradient(circle, transparent 60%, white 62%);
+    background-size: 8px 8px;
+    background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    background-position: 0 0, 0 100%, 0 0, 100% 0;
+    pointer-events: none;
+}
+
+.stamp-inner {
+    border: 2px dashed var(--stamp-red);
+    width: 100%;
+    height: 100%;
+    background: #fffdfa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 2px;
+    text-align: center;
+}
+
+.stamp-header {
+    font-size: 0.45rem;
+    font-weight: 700;
+    color: var(--stamp-red);
+    letter-spacing: 0.5px;
+}
+
+.stamp-icon {
+    font-size: 0.8rem;
+    color: var(--stamp-red);
+}
+
+.stamp-main-value {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--stamp-red);
+    line-height: 1;
+}
+
+.stamp-footer {
+    font-size: 0.45rem;
+    font-weight: 700;
+    color: var(--stamp-red);
+    letter-spacing: 0.5px;
+}
+
+/* Con dấu mực tròn đè lên */
+.postmark-circle {
+    width: 65px;
+    height: 65px;
+    border: 2px double rgba(199, 24, 74, 0.4);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-size: 0.65rem;
+    color: rgba(199, 24, 74, 0.4);
+    transform: rotate(-15deg);
+    font-weight: 700;
+    line-height: 1.1;
+    pointer-events: none;
+}
+
+.postmark-names {
+    font-size: 0.55rem;
+    letter-spacing: 0.5px;
+}
+
+.animate-stamp {
+    opacity: 0;
+    transform: scale(1.5) rotate(20deg);
+    animation: stampFall 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    animation-delay: 0.8s;
+}
+
+@keyframes stampFall {
+    to {
+        opacity: 1;
+        transform: scale(1) rotate(5deg);
+    }
+}
+
+/* --- THƯ TÌNH KẺ DÒNG --- */
+.handwritten-letter-box {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-handwriting);
+    font-size: 1.45rem;
+    color: var(--ink-blue);
+    position: relative;
+}
+
+/* Đường lề đỏ tập học sinh */
+.letter-lines::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -15px;
+    width: 1px;
+    background: rgba(255, 0, 0, 0.25); /* Lề đỏ */
+}
+
+/* Kẻ dòng tập */
+.letter-lines {
+    background-image: linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0) 95%, rgba(42, 67, 101, 0.08) 100%);
+    background-size: 100% 32px;
+    line-height: 32px;
+    padding-left: 5px;
+    flex-grow: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.1) transparent;
+}
+
+.letter-lines::-webkit-scrollbar {
+    width: 4px;
+}
+
+.letter-lines::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.1);
+    border-radius: 4px;
+}
+
+.letter-salutation {
+    margin-bottom: 0.5rem;
+}
+
+.letter-body {
+    white-space: normal;
+    word-break: break-word;
+}
+
+.letter-signature {
+    text-align: right;
+    margin-top: 1rem;
+    font-family: var(--font-cursive);
+    font-size: 1.6rem;
+    line-height: 1.2;
+}
+
+.sig-name {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+/* --- DÒNG THỜI GIAN SCRAPBOOK --- */
+.scrapbook-layout {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-grow: 1;
+    height: calc(100% - 100px);
+}
+
+.scrapbook-layout.alternative {
+    flex-direction: row-reverse;
+}
+
+/* Polaroid Photo Style */
+.polaroid-photo {
+    background: #fff;
+    padding: 12px 12px 24px 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    border: 1px solid rgba(0,0,0,0.04);
+    width: 250px;
+    flex-shrink: 0;
+    position: relative;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.polaroid-photo:hover {
+    transform: rotate(0deg) scale(1.03) !important;
+    z-index: 10;
+}
+
+.rotate-left {
+    transform: rotate(-4deg);
+}
+
+.rotate-right {
+    transform: rotate(4deg);
+}
+
+.photo-wrapper {
+    width: 100%;
+    height: 220px;
+    background: #eceee6;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.photo-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.empty-photo-info {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    text-align: center;
+    color: #8c887e;
+}
+
+.empty-photo-info i {
+    font-size: 1.8rem;
+    color: #c6bda8;
+    margin-bottom: 0.5rem;
+}
+
+.empty-photo-info p {
+    font-family: var(--font-serif);
+    font-size: 0.7rem;
+    line-height: 1.3;
+}
+
+.empty-photo-info code {
+    background: rgba(0,0,0,0.04);
+    padding: 1px 4px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.polaroid-caption {
+    font-family: var(--font-handwriting);
+    font-size: 1.25rem;
+    text-align: center;
+    color: var(--ink-blue);
+    margin-top: 12px;
+    line-height: 1.2;
+}
+
+/* Sticky Tape Effect (Băng keo dán ảnh) */
+.sticky-tape {
+    position: absolute;
+    width: 90px;
+    height: 25px;
+    background: var(--tape-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    backdrop-filter: blur(1.5px);
+    -webkit-backdrop-filter: blur(1.5px);
+    z-index: 5;
+    border-left: 1px dashed rgba(255,255,255,0.4);
+    border-right: 1px dashed rgba(255,255,255,0.4);
+}
+
+.tape-top-left {
+    top: -12px;
+    left: -20px;
+    transform: rotate(-35deg);
+}
+
+.tape-top-right {
+    top: -12px;
+    right: -20px;
+    transform: rotate(35deg);
+}
+
+.diary-memo-text {
+    font-family: var(--font-handwriting);
+    font-size: 1.4rem;
+    line-height: 1.6;
+    color: var(--ink-blue);
+    padding: 1rem;
+    border-left: 1px dashed rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+@media screen and (min-width: 769px) {
+    .scrapbook-layout.alternative .diary-memo-text {
+        border-left: none;
+        border-right: 1px dashed rgba(0,0,0,0.1);
+    }
+}
+
+/* --- MEMO PAD (LÝ DO YÊU) --- */
+.love-notes-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.notes-subtitle {
+    font-family: var(--font-serif);
+    font-size: 0.95rem;
+    color: var(--ink-black);
+    margin-bottom: 1.5rem;
+}
+
+/* Memo Pad Card Style */
+.memo-pad-container {
+    perspective: 1000px;
+    width: 100%;
+    max-width: 420px;
+    height: 240px;
+    margin-bottom: 2rem;
+}
+
+.memo-paper {
+    width: 100%;
+    height: 100%;
+    background: #fff8db; /* Giấy ghi chú màu vàng nhạt */
+    box-shadow: 5px 8px 20px rgba(0,0,0,0.12), inset 0 2px 4px rgba(255,255,255,0.6);
+    border: 1px solid #eadeb1;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    cursor: pointer;
+    border-radius: 4px;
+    position: relative;
+}
+
+/* Lò xo nhỏ trên đầu giấy Memo */
+.memo-paper::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 10%;
+    right: 10%;
+    height: 10px;
+    background-image: repeating-linear-gradient(90deg, #999 0px, #999 4px, transparent 4px, transparent 16px);
+}
+
+.memo-paper-lines {
+    width: 100%;
+    height: 100%;
+    padding: 1.5rem;
+    background-image: linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0) 95%, rgba(134, 84, 57, 0.08) 100%);
+    background-size: 100% 28px;
+    border-radius: 4px;
+}
+
+.memo-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+}
+
+.memo-paper.flipped {
+    transform: rotateY(180deg);
+}
+
+.memo-front, .memo-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.memo-front {
+    color: #865439;
+}
+
+.memo-heart-icon {
+    font-size: 2.5rem;
+    color: var(--stamp-red);
+    margin-bottom: 0.8rem;
+    animation: memoHeartBeat 1.5s infinite alternate;
+}
+
+@keyframes memoHeartBeat {
+    to { transform: scale(1.15); }
+}
+
+.memo-prompt-text {
+    font-family: var(--font-handwriting);
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.memo-back {
+    transform: rotateY(180deg);
+    color: var(--ink-blue);
+    padding: 1rem;
+}
+
+.note-content-text {
+    font-family: var(--font-handwriting);
+    font-size: 1.6rem;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+/* Vintage Button */
+.vintage-btn {
+    font-family: var(--font-handwriting);
+    font-size: 1.4rem;
+    font-weight: 700;
+    background: #865439;
+    border: 2px solid #5c3d2e;
+    color: #fdfbf7;
+    padding: 6px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.vintage-btn:hover {
+    background: #5c3d2e;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.vintage-btn:active {
+    transform: translateY(0);
+}
+
+/* --- VINTAGE FOOTER --- */
+.vintage-footer {
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    color: #8c887e;
+    font-size: 0.85rem;
+    background-color: var(--paper-ivory);
+    border-top: 1px dashed rgba(0,0,0,0.1);
+    scroll-snap-align: end;
+}
+
+.vintage-footer strong {
+    color: var(--stamp-red);
+}
+
+.footer-subtext {
+    font-size: 0.75rem;
+    margin-top: 0.4rem;
+    color: #a6a297;
+}
+
+/* --- Polaroid Collage (Stacked Photos) --- */
+.polaroid-collage {
+    position: relative;
+    width: 280px;
+    height: 350px;
+    flex-shrink: 0;
+    margin-left: 20px;
+}
+
+.polaroid-collage .polaroid-photo {
+    position: absolute;
+    width: 210px;
+    padding: 10px 10px 20px 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    background: #fff;
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), z-index 0.4s ease;
+}
+
+.polaroid-collage .polaroid-photo .photo-wrapper {
+    height: 180px;
+}
+
+/* Tấm thứ nhất nằm dưới, nghiêng trái */
+.polaroid-collage .polaroid-photo:nth-child(1) {
+    top: 10px;
+    left: 0;
+    transform: rotate(-8deg);
+    z-index: 1;
+}
+
+/* Tấm thứ hai nằm đè lên, nghiêng phải */
+.polaroid-collage .polaroid-photo:nth-child(2) {
+    top: 30px;
+    left: 60px;
+    transform: rotate(6deg);
+    z-index: 2;
+}
+
+/* Khi hover: Đưa tấm ảnh lên trên cùng, căn thẳng và phóng to nhẹ */
+.polaroid-collage .polaroid-photo:hover {
+    z-index: 10 !important;
+    transform: scale(1.08) rotate(0deg) translate(-10px, -10px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+
+/* --- ALBUM PAGE STYLING --- */
+.album-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    justify-items: center;
+    align-items: center;
+    flex-grow: 1;
+    margin-top: 15px;
+}
+
+.album-grid .polaroid-photo {
+    width: 170px;
+    padding: 8px 8px 16px 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, z-index 0.3s ease;
+}
+
+.album-grid .polaroid-photo .photo-wrapper {
+    height: 120px;
+}
+
+.album-grid .polaroid-photo .polaroid-caption {
+    font-size: 0.95rem;
+    margin-top: 8px;
+    color: var(--ink-blue);
+}
+
+/* Tilting individual photos for scrapbook feel */
+.album-grid .polaroid-photo:nth-child(1) { transform: rotate(-3deg); }
+.album-grid .polaroid-photo:nth-child(2) { transform: rotate(2.5deg); }
+.album-grid .polaroid-photo:nth-child(3) { transform: rotate(-1.5deg); }
+.album-grid .polaroid-photo:nth-child(4) { transform: rotate(3deg); }
+.album-grid .polaroid-photo:nth-child(5) { transform: rotate(-2deg); }
+.album-grid .polaroid-photo:nth-child(6) { transform: rotate(1.5deg); }
+
+.album-grid .polaroid-photo:hover {
+    transform: rotate(0deg) scale(1.08) !important;
+    box-shadow: 0 10px 20px rgba(134, 84, 57, 0.2);
+    z-index: 10;
+}
+
+/* --- LIGHTBOX MODAL --- */
+.lightbox-modal {
+    display: flex;
+    position: fixed;
+    z-index: 3000;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(45, 38, 38, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.lightbox-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 85%;
+    max-height: 85%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.9);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+}
+
+.lightbox-modal.active .lightbox-content {
+    transform: scale(1);
+}
+
+.lightbox-img {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    border: 12px solid #fff;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border-radius: 4px;
+}
+
+.lightbox-caption {
+    margin-top: 15px;
+    font-family: var(--font-handwriting);
+    font-size: 1.6rem;
+    color: #fdfbf7;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+    text-align: center;
+    max-width: 600px;
+    padding: 0 10px;
+    word-break: break-word;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: #fdfbf7;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+    user-select: none;
+    z-index: 3010;
+}
+
+.lightbox-close:hover {
+    color: var(--stamp-red);
+    transform: scale(1.1);
+}
+
+/* --- FLOATING SHARE BUTTON --- */
+.floating-share {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    z-index: 100;
+    transition: transform 0.3s ease, opacity 0.5s ease, visibility 0.5s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.floating-share.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.share-fab-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 3px solid #865439;
+    background: #c68b59;
+    color: #fdfaf2;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.4);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+}
+
+.share-fab-btn:hover {
+    background: #865439;
+    transform: scale(1.08) rotate(15deg);
+}
+
+/* --- SHARE MODAL --- */
+.share-modal {
+    display: flex;
+    position: fixed;
+    z-index: 3000;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(45, 38, 38, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.share-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.share-card {
+    background: var(--paper-ivory);
+    border: 3px solid #865439;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    position: relative;
+    transform: scale(0.9);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    text-align: center;
+}
+
+.share-modal.active .share-card {
+    transform: scale(1);
+}
+
+.share-close {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #8c887e;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.share-close:hover {
+    color: var(--stamp-red);
+    transform: scale(1.1);
+}
+
+.share-card-header {
+    margin-bottom: 1.5rem;
+}
+
+.share-header-icon {
+    font-size: 2.2rem;
+    color: var(--stamp-red);
+    margin-bottom: 0.5rem;
+    filter: drop-shadow(0 2px 5px rgba(199, 24, 74, 0.2));
+    animation: shareHeartPulse 1.2s infinite alternate;
+}
+
+@keyframes shareHeartPulse {
+    to { transform: scale(1.12); }
+}
+
+.share-card-header h3 {
+    font-family: var(--font-heading);
+    font-size: 1.45rem;
+    color: #865439;
+    font-weight: 700;
+}
+
+.share-subtitle {
+    font-size: 0.85rem;
+    color: #8c887e;
+    margin-top: 0.2rem;
+}
+
+.share-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+/* Vùng QR Code */
+.qr-container {
+    width: 180px;
+    height: 180px;
+    background: #fff;
+    padding: 10px;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.qr-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.qr-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #c6bda8;
+    text-align: center;
+}
+
+.qr-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.qr-placeholder p {
+    font-size: 0.75rem;
+    font-family: var(--font-serif);
+}
+
+.animate-pulse {
+    animation: qrPulse 1.5s infinite alternate ease-in-out;
+}
+
+@keyframes qrPulse {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Ô input sao chép liên kết */
+.share-link-group {
+    display: flex;
+    width: 100%;
+    border: 2px solid #c6bda8;
+    border-radius: 30px;
+    overflow: hidden;
+    background: #fff;
+    transition: border-color 0.2s;
+}
+
+.share-link-group:focus-within {
+    border-color: #865439;
+}
+
+#shareLinkInput {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    padding: 8px 14px;
+    font-family: var(--font-serif);
+    font-size: 0.85rem;
+    color: var(--ink-black);
+    background: transparent;
+}
+
+#copyLinkBtn {
+    background: #865439;
+    border: none;
+    color: #fdfbf7;
+    padding: 0 16px;
+    font-family: var(--font-handwriting);
+    font-size: 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+}
+
+#copyLinkBtn:hover {
+    background: #5c3d2e;
+}
+
+.copy-toast {
+    font-family: var(--font-handwriting);
+    font-size: 1.25rem;
+    color: #2e7d32;
+    height: 20px;
+    font-weight: 700;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.copy-toast.show {
+    opacity: 1;
+}
+
+/* --- RESPONSIVENESS (MOBILE FRIENDLY) --- */
+@media screen and (max-width: 768px) {
+    .diary-page {
+        padding: 1rem 0.5rem;
+    }
+
+    .cover-content {
+        max-width: 90%;
+        height: 520px;
+        padding: 1.5rem;
+    }
+
+    .cover-title {
+        font-size: 2.3rem;
+    }
+
+    .handwritten-accent {
+        font-size: 2.6rem;
+    }
+
+    .cover-names {
+        font-size: 1.4rem;
+    }
+
+    .notebook-sheet {
+        height: 94vh;
+        max-height: none;
+        border-radius: 8px;
+        padding: 2rem 1rem 1.5rem 2.5rem; /* Giảm khoảng lề */
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .notebook-rings {
+        left: 8px;
+    }
+
+    .ring {
+        width: 10px;
+        height: 25px;
+    }
+
+    .ring::before, .ring::after {
+        width: 6px;
+        height: 8px;
+        left: -5px;
+    }
+
+    .page-heading {
+        font-size: 1.4rem;
+    }
+
+    .diary-date {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .love-stamp-container {
+        top: 15px;
+        right: 15px;
+        gap: 6px;
+    }
+
+    .postal-stamp {
+        width: 65px;
+        height: 80px;
+        padding: 2px;
+    }
+
+    .stamp-main-value {
+        font-size: 1.3rem;
+    }
+
+    .postmark-circle {
+        width: 45px;
+        height: 45px;
+        font-size: 0.5rem;
+    }
+
+    .handwritten-letter-box {
+        font-size: 1.15rem;
+    }
+
+    .letter-lines {
+        background-size: 100% 28px;
+        line-height: 28px;
+    }
+
+    .letter-signature {
+        font-size: 1.3rem;
+        margin-top: 0.5rem;
+    }
+
+    /* Scrapbook layouts on Mobile: Stack Vertically */
+    .scrapbook-layout, .scrapbook-layout.alternative {
+        flex-direction: column;
+        gap: 12px;
+        justify-content: flex-start;
+        overflow-y: auto;
+    }
+
+    .polaroid-photo {
+        width: 100%;
+        max-width: 220px;
+        padding: 8px 8px 16px 8px;
+    }
+
+    .photo-wrapper {
+        height: 140px;
+    }
+
+    .polaroid-caption {
+        font-size: 1rem;
+        margin-top: 6px;
+    }
+
+    .diary-memo-text {
+        font-size: 1.15rem;
+        line-height: 1.4;
+        padding: 0 0 0 10px;
+        border-left: 2px dashed rgba(0,0,0,0.06);
+    }
+
+    .memo-pad-container {
+        height: 200px;
+        max-width: 90%;
+    }
+
+    .note-content-text {
+        font-size: 1.25rem;
+    }
+
+    .vintage-btn {
+        font-size: 1.15rem;
+    }
+
+    .vintage-player {
+        left: 12px;
+        bottom: 12px;
+        right: 12px;
+        max-width: none;
+        width: calc(100% - 24px);
+    }
+
+    /* Responsive Polaroid Collage on Mobile */
+    .polaroid-collage {
+        width: 100%;
+        height: auto;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-left: 0;
+        padding-top: 10px;
+    }
+    .polaroid-collage .polaroid-photo {
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 45% !important;
+        max-width: 160px !important;
+        transform: rotate(0deg) !important;
+        margin: 0 !important;
+        padding: 6px 6px 12px 6px !important;
+    }
+    .polaroid-collage .polaroid-photo .photo-wrapper {
+        height: 110px !important;
+    }
+    .polaroid-collage .polaroid-photo .polaroid-caption {
+        font-size: 0.75rem !important;
+        margin-top: 4px !important;
+        line-height: 1.2 !important;
+    }
+    .polaroid-collage .polaroid-photo:nth-child(1) {
+        transform: rotate(-3deg) !important;
+    }
+    .polaroid-collage .polaroid-photo:nth-child(2) {
+        transform: rotate(3deg) !important;
+    }
+
+    /* Album Grid Responsive on Mobile */
+    .album-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        overflow-y: auto;
+        max-height: calc(100% - 60px);
+        padding: 10px 5px 20px 5px;
+    }
+
+    .album-grid .polaroid-photo {
+        width: 100% !important;
+        max-width: 125px !important;
+        padding: 6px 6px 12px 6px !important;
+        margin: 0 auto !important;
+        transform: rotate(0deg) !important;
+    }
+
+    .album-grid .polaroid-photo .photo-wrapper {
+        height: 95px !important;
+    }
+
+    .album-grid .polaroid-photo .polaroid-caption {
+        font-size: 0.75rem !important;
+        margin-top: 4px !important;
+    }
+
+    /* Lightbox Responsive on Mobile */
+    .lightbox-img {
+        max-height: 55vh;
+        border: 8px solid #fff;
+    }
+    .lightbox-caption {
+        font-size: 1.25rem;
+    }
+    .lightbox-close {
+        top: 15px;
+        right: 20px;
+        font-size: 35px;
+    }
+
+    /* Share Button & Modal Responsive on Mobile */
+    .floating-share {
+        top: 16px;
+        left: 16px;
+    }
+    .share-fab-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 1rem;
+    }
+    .share-card {
+        max-width: 90%;
+        padding: 1.5rem 1rem;
+    }
+    .qr-container {
+        width: 150px;
+        height: 150px;
+        padding: 8px;
+    }
+    #shareLinkInput {
+        font-size: 0.8rem;
+    }
+    #copyLinkBtn {
+        padding: 0 12px;
+        font-size: 1rem;
+    }
+}

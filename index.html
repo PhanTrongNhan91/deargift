@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Một Năm, Từng Trang - Nhật Ký Tình Yêu Nhân & Trang</title>
+
+    <!-- Google Fonts: Lora (Warm Serif), Playfair Display (Elegant Serif), Caveat & Dancing Script (Handwriting) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Itim&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Patrick+Hand&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="style.css?v=1.0.1">
+</head>
+
+<body>
+    <!-- Màn hình khóa (Lock Screen Overlay) -->
+    <div class="lock-screen" id="lockScreen">
+        <div class="lock-card-container">
+            <!-- Cổng trái tim đôi (Heart Gate) -->
+            <div class="heart-gate" id="heartGate">
+                <div class="heart-half left"></div>
+                <div class="heart-half right"></div>
+                <div class="keyhole-icon">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+            </div>
+
+            <h2 class="lock-title">Mã Khóa Tình Yêu</h2>
+            <p class="lock-subtitle">Nhập mã số ngày kỷ niệm của chúng mình (ddmmyy)</p>
+
+            <div class="input-group">
+                <input type="password" id="passwordInput" placeholder="Mật khẩu là gì nhỉ..." maxlength="10" autofocus>
+                <button id="unlockBtn" aria-label="Mở khóa">
+                    <i class="fa-solid fa-heart"></i>
+                </button>
+            </div>
+            <p class="error-msg" id="errorMsg"></p>
+        </div>
+    </div>
+
+    <!-- Background Canvas for Soft Floating Petals / Warm Dust -->
+    <canvas id="petalCanvas"></canvas>
+
+    <!-- Music Player styled as a vintage wooden cassette controls -->
+    <div class="vintage-player" id="musicPlayer">
+        <button class="player-btn" id="playPauseBtn" aria-label="Phát/Tạm Dừng Nhạc">
+            <i class="fas fa-play"></i>
+        </button>
+        <div class="player-meta">
+            <span class="song-title">Dù Cho Tận Thế - ERIK</span>
+            <span class="song-status">Bấm để phát nhạc nền...</span>
+        </div>
+        <audio id="bgMusic" loop>
+            <source src="assets/duchotanthe.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <!-- Scrollable Diary Book -->
+    <div class="diary-book">
+
+        <!-- PAGE 1: BÌA SỔ (Notebook Cover) -->
+        <section class="diary-page page-cover" id="page-cover">
+            <div class="cover-content">
+                <div class="cover-border">
+                    <span class="cover-badge">Kỷ Niệm 1 Năm</span>
+                    <h1 class="cover-title">Nhật Ký<br><span class="handwritten-accent">Yêu Thương</span></h1>
+                    <div class="cover-heart-lock">
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                    <p class="cover-names">
+                        Nhân Phan <span class="nickname">(Seal iu)</span>
+                        <span class="names-separator"><i class="fa-solid fa-heart"></i></span>
+                        Thùy Trang <span class="nickname">(Dưa Hấu)</span>
+                    </p>
+                    <p class="cover-date">30.06.2025 - 30.06.2026</p>
+                    <div class="scroll-prompt">
+                        <p class="scroll-text">Mở sổ tay để xem...</p>
+                        <i class="fa-solid fa-angle-down bounce-arrow"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 2: THƯ TÌNH (Love Letter Page) -->
+        <section class="diary-page page-paper" id="page-letter">
+            <div class="notebook-sheet">
+                <!-- Ring binder holes for notebook look -->
+                <div class="notebook-rings">
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                </div>
+
+                <!-- Postal/Wax Stamp showing Love Counter -->
+                <div class="love-stamp-container">
+                    <div class="postal-stamp animate-stamp">
+                        <div class="stamp-serrated-edges"></div>
+                        <div class="stamp-inner">
+                            <span class="stamp-header">BƯU HOA TÌNH YÊU</span>
+                            <div class="stamp-icon"><i class="fa-solid fa-heart"></i></div>
+                            <div class="stamp-main-value" id="stampDaysCount">0</div>
+                            <span class="stamp-footer">NGÀY BÊN NHAU</span>
+                        </div>
+                    </div>
+                    <div class="postmark-circle">
+                        <span>30.06.25</span>
+                        <span class="postmark-names">N ❤️ T</span>
+                    </div>
+                </div>
+
+                <div class="sheet-content">
+                    <h2 class="page-heading">Gửi đến em - Cục dàng của anh</h2>
+                    <div class="diary-date">Ngày 30 tháng 06 năm 2026</div>
+
+                    <div class="handwritten-letter-box">
+                        <p class="letter-salutation">Cục dàng thúi của anh,</p>
+                        <div class="letter-lines">
+                            <div id="typewrittenText" class="letter-body">
+                                Cục dàng ơi! Tụi mình đã yêu nhau được 1 năm rồi đó. Nhanh há cục dàng, mới đây thoi mà
+                                2 mình đã đồng hành cùng nhau được 1 chặn đường gòi đó. Cảm ơn cục dàng đã luôn ở bên
+                                cạnh anh, luôn thấu hiểu, chia sẽ mọi điều cùng anh. Cục dàng luôn cỗ vũ, động viên anh
+                                trong học tập và công việc. Anh mong 2 chúng ta sẽ cố gắng đồng hành cùng nhau qua nhiều
+                                cái 1 năm nữa. Mong cho 2 chúng ta sẽ vượt qua mọi điều khó khăn trong tương lai và sẽ
+                                có 1 cái kết quả xứng đáng với nổ lực mà 2 chúng ta đã cố gắng cùng nhau.
+                                Ngày nào anh cũng nói eoo em hết. Hôm nay anh xin nhấn mạnh 1 lần nữa "Anh eoo cục dàng
+                                của anh vãi luôn í".
+                            </div>
+                        </div>
+                        <p class="letter-signature">Thương em,<br><span class="sig-name">Nhân Phan</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 3: MILESTONE 1 (Timeline Page 1) -->
+        <section class="diary-page page-paper" id="milestone-1">
+            <div class="notebook-sheet">
+                <div class="notebook-rings">
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                </div>
+
+                <div class="sheet-content">
+                    <h2 class="page-heading">Khởi Đầu Hành Trình</h2>
+                    <div class="diary-date">30.06.2025</div>
+
+                    <div class="scrapbook-layout">
+                        <!-- Polaroid photo dán băng keo -->
+                        <div class="polaroid-photo rotate-left">
+                            <div class="sticky-tape tape-top-left"></div>
+                            <div class="photo-wrapper">
+                                <img src="assets/photo1.jpg" alt="Ngày bắt đầu tình yêu"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="empty-photo-info">
+                                    <i class="fa-solid fa-camera"></i>
+                                    <p>Tải ảnh ngày bắt đầu lên <code>assets/photo1.jpg</code></p>
+                                </div>
+                            </div>
+                            <p class="polaroid-caption">Lần đầu tiên 2 đứa chính thức yêu nhau ❤️</p>
+                        </div>
+
+                        <div class="diary-memo-text">
+                            <p>Đây là ngày đặc biệt nhất, ngày mà anh chính thức chinh phục được cục dàng. Cảm ơn cục
+                                dàng đã đồng ý làm người yêu anh để anh có được 1 cục dàng đáng iuu như ngày hôm nay.
+                            </p>
+                            <p>Anh vẫn nhớ cảm giác hồi hộp lúc tỏ tình cục dàng và hạnh phúc vãi ò khi cục dàng gật đầu
+                                đồng ý.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 4: MILESTONE 2 (Timeline Page 2) -->
+        <section class="diary-page page-paper" id="milestone-2">
+            <div class="notebook-sheet">
+                <div class="notebook-rings">
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                </div>
+
+                <div class="sheet-content">
+                    <h2 class="page-heading">Buổi Hẹn Đặc Biệt</h2>
+                    <div class="diary-date">Tháng 01/2026 - Tháng 03/2026</div>
+
+                    <div class="scrapbook-layout alternative">
+                        <div class="diary-memo-text">
+                            <p>Anh và cục dàng đã cùng nhau đón sinh nhật chung của 2 đứa mình gòi. Mong 2 chúng ta sẽ
+                                đón nhiều cái sinh nhật cùng nhau nhé!
+                            </p>
+                            <p>Cảm ơn cục dàng đã chuẩn bị những món quà bất ngờ tặng anh. Anh rất thích và trân trọng
+                                những món quà của cục dàng.
+                            </p>
+                        </div>
+
+                        <div class="polaroid-collage">
+                            <!-- Tấm ảnh thứ nhất -->
+                            <div class="polaroid-photo rotate-left">
+                                <div class="sticky-tape tape-top-left"></div>
+                                <div class="photo-wrapper">
+                                    <img src="assets/photo2_1.jpg" alt="Buổi hẹn hò 1"
+                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="empty-photo-info">
+                                        <i class="fa-solid fa-cookie-bite"></i>
+                                        <p>Tải ảnh hẹn hò 1 lên <code>assets/photo2_1.jpg</code></p>
+                                    </div>
+                                </div>
+                                <p class="polaroid-caption">Sinh nhật cục dàng đáng iu ❤️</p>
+                            </div>
+                            <!-- Tấm ảnh thứ hai -->
+                            <div class="polaroid-photo rotate-right">
+                                <div class="sticky-tape tape-top-right"></div>
+                                <div class="photo-wrapper">
+                                    <img src="assets/photo2_2.jpg" alt="Buổi hẹn hò 2"
+                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="empty-photo-info">
+                                        <i class="fa-solid fa-cookie-bite"></i>
+                                        <p>Tải ảnh hẹn hò 2 lên <code>assets/photo2_2.jpg</code></p>
+                                    </div>
+                                </div>
+                                <p class="polaroid-caption">Sinh nhật của anh và ani 6th❤️</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 5: MILESTONE 3 (Timeline Page 3) -->
+        <section class="diary-page page-paper" id="milestone-3">
+            <div class="notebook-sheet">
+                <div class="notebook-rings">
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                </div>
+
+                <div class="sheet-content">
+                    <h2 class="page-heading">Chuyến Đi Xa Đầu Tiên</h2>
+                    <div class="diary-date">Tháng 02/2026</div>
+
+                    <div class="scrapbook-layout">
+                        <div class="polaroid-collage">
+                            <!-- Tấm ảnh thứ nhất (Vũng Tàu) -->
+                            <div class="polaroid-photo rotate-left">
+                                <div class="sticky-tape tape-top-left"></div>
+                                <div class="photo-wrapper">
+                                    <img src="assets/photo3_1.jpg" alt="Chuyến đi xa 1 - Vũng Tàu"
+                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="empty-photo-info">
+                                        <i class="fa-solid fa-plane"></i>
+                                        <p>Tải ảnh chuyến đi 1 lên <code>assets/photo3_1.jpg</code></p>
+                                    </div>
+                                </div>
+                                <p class="polaroid-caption">Vũng Tàu lộng gió cùng em 🌊</p>
+                            </div>
+                            <!-- Tấm ảnh thứ hai (Đà Lạt) -->
+                            <div class="polaroid-photo rotate-right">
+                                <div class="sticky-tape tape-top-right"></div>
+                                <div class="photo-wrapper">
+                                    <img src="assets/photo3_2.jpg" alt="Chuyến đi xa 2 - Đà Lạt"
+                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="empty-photo-info">
+                                        <i class="fa-solid fa-plane"></i>
+                                        <p>Tải ảnh chuyến đi 2 lên <code>assets/photo3_2.jpg</code></p>
+                                    </div>
+                                </div>
+                                <p class="polaroid-caption">Ngắm mây trời Đà Lạt yên bình ☁️</p>
+                            </div>
+                        </div>
+
+                        <div class="diary-memo-text">
+                            <p>Đây là 2 chuyến đi chơi xa cùng nhau của 2 đứa mình. Những chuyến đi này mang lại
+                                nhiều kỹ niệm cho 2 chúng ta. Anh mong mình sẽ có nhiều chuyến đi chơi xa cùng nhau
+                                hơn nữa nhá.
+                            </p>
+                            <p>Đi đâu không quan trọng, quan trọng là chúng ta đi cùng nhau!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 6: MILESTONE 4 (Timeline Page 4 & 1st Anniversary) -->
+        <section class="diary-page page-paper" id="milestone-4">
+            <div class="notebook-sheet">
+                <div class="notebook-rings">
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                </div>
+
+                <div class="sheet-content">
+                    <h2 class="page-heading">Tròn Một Năm Yêu</h2>
+                    <div class="diary-date">30.06.2026</div>
+
+                    <div class="scrapbook-layout alternative">
+                        <div class="diary-memo-text">
+                            <p>Tròn 365 ngày bên nhau. Cả 2 chúng ta đã trãi qua nhiều kĩ niệm vui buồn cùng nhau.
+                                Cảm ơn cục dàng của anh vì tất cả! Anh yêu em ❤️
+                            </p>
+                            <p>Cột mốc 1 năm không phải là điểm dừng, mà là lời khẳng định vững chắc cho một tương lai
+                                lâu dài cùng nhau.</p>
+                        </div>
+
+                        <div class="polaroid-photo rotate-right">
+                            <div class="sticky-tape tape-top-right"></div>
+                            <div class="photo-wrapper">
+                                <img src="assets/photo4.jpg" alt="Tròn 1 năm yêu nhau"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="empty-photo-info">
+                                    <i class="fa-solid fa-gift"></i>
+                                    <p>Tải ảnh kỷ niệm lên <code>assets/photo4.jpg</code></p>
+                                </div>
+                            </div>
+                            <p class="polaroid-caption">Mãi yêu thương như ngày đầu 🌹</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 7: ALBUM KỶ NIỆM (Photo Album Page) -->
+        <section class="diary-page page-paper" id="page-album">
+            <div class="notebook-sheet">
+                <div class="notebook-rings">
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                </div>
+
+                <div class="sheet-content">
+                    <h2 class="page-heading">Album Yêu Thương</h2>
+                    <div class="diary-date">Nhìn Lại Hành Trình Đã Qua ❤️</div>
+
+                    <div class="album-grid">
+                        <!-- Polaroid photo 1 -->
+                        <div class="polaroid-photo" data-caption="Lần đầu tiên 2 đứa chính thức yêu nhau ❤️">
+                            <div class="sticky-tape tape-top-left"></div>
+                            <div class="photo-wrapper">
+                                <img src="assets/photo1.jpg" alt="Ngày bắt đầu tình yêu"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="empty-photo-info">
+                                    <i class="fa-solid fa-camera"></i>
+                                    <p>Tải ảnh ngày bắt đầu lên <code>assets/photo1.jpg</code></p>
+                                </div>
+                            </div>
+                            <p class="polaroid-caption">Ngày bắt đầu</p>
+                        </div>
+                        
+                        <!-- Polaroid photo 2 -->
+                        <div class="polaroid-photo" data-caption="Sinh nhật cục dàng đáng iu ❤️">
+                            <div class="sticky-tape tape-top-right"></div>
+                            <div class="photo-wrapper">
+                                <img src="assets/photo2_1.jpg" alt="Sinh nhật Thùy Trang"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="empty-photo-info">
+                                    <i class="fa-solid fa-cookie-bite"></i>
+                                    <p>Tải ảnh hẹn hò 1 lên <code>assets/photo2_1.jpg</code></p>
+                                </div>
+                            </div>
+                            <p class="polaroid-caption">Sinh nhật em</p>
+                        </div>
+
+                        <!-- Polaroid photo 3 -->
+                        <div class="polaroid-photo" data-caption="Sinh nhật của anh và kỷ niệm 6 tháng yêu nhau ❤️">
+                            <div class="sticky-tape tape-top-left"></div>
+                            <div class="photo-wrapper">
+                                <img src="assets/photo2_2.jpg" alt="Sinh nhật Trọng Nhân & Ani 6 tháng"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="empty-photo-info">
+                                    <i class="fa-solid fa-cookie-bite"></i>
+                                    <p>Tải ảnh hẹn hò 2 lên <code>assets/photo2_2.jpg</code></p>
+                                </div>
+                            </div>
+                            <p class="polaroid-caption">Sinh nhật anh</p>
+                        </div>
+
+                        <!-- Polaroid photo 4 -->
+                        <div class="polaroid-photo" data-caption="Vũng Tàu lộng gió cùng em 🌊">
+                            <div class="sticky-tape tape-top-right"></div>
+                            <div class="photo-wrapper">
+                                <img src="assets/photo3_1.jpg" alt="Chuyến đi chơi Vũng Tàu"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="empty-photo-info">
+                                    <i class="fa-solid fa-plane"></i>
+                                    <p>Tải ảnh chuyến đi 1 lên <code>assets/photo3_1.jpg</code></p>
+                                </div>
+                            </div>
+                            <p class="polaroid-caption">Vũng Tàu</p>
+                        </div>
+
+                        <!-- Polaroid photo 5 -->
+                        <div class="polaroid-photo" data-caption="Ngắm mây trời Đà Lạt yên bình ☁️">
+                            <div class="sticky-tape tape-top-left"></div>
+                            <div class="photo-wrapper">
+                                <img src="assets/photo3_2.jpg" alt="Chuyến đi Đà Lạt"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="empty-photo-info">
+                                    <i class="fa-solid fa-plane"></i>
+                                    <p>Tải ảnh chuyến đi 2 lên <code>assets/photo3_2.jpg</code></p>
+                                </div>
+                            </div>
+                            <p class="polaroid-caption">Đà Lạt</p>
+                        </div>
+
+                        <!-- Polaroid photo 6 -->
+                        <div class="polaroid-photo" data-caption="Mãi yêu thương như ngày đầu 🌹">
+                            <div class="sticky-tape tape-top-right"></div>
+                            <div class="photo-wrapper">
+                                <img src="assets/photo4.jpg" alt="Kỷ niệm tròn 1 năm yêu nhau"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="empty-photo-info">
+                                    <i class="fa-solid fa-gift"></i>
+                                    <p>Tải ảnh kỷ niệm lên <code>assets/photo4.jpg</code></p>
+                                </div>
+                            </div>
+                            <p class="polaroid-caption">Tròn 1 năm</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Cozy Footer integrated within the book flow -->
+    <footer class="vintage-footer">
+        <p>Thiết kế thủ công bằng tất cả tấm lòng từ <strong>Trọng Nhân</strong> dành tặng <strong>Thùy Trang</strong>
+            ❤️</p>
+        <p class="footer-subtext">Nhật Ký Tình Yêu - Kỷ niệm 1 năm bên nhau (30.06.2025 - 30.06.2026)</p>
+    </footer>
+
+    <!-- Floating Share Button (Hiển thị sau khi mở khóa) -->
+    <div class="floating-share" id="shareFab">
+        <button class="share-fab-btn" id="shareFabBtn" aria-label="Chia sẻ yêu thương">
+            <i class="fa-solid fa-share-nodes"></i>
+        </button>
+    </div>
+
+    <!-- Share Modal (Mã QR & Link) -->
+    <div class="share-modal" id="shareModal" aria-hidden="true" role="dialog">
+        <div class="share-card">
+            <span class="share-close" id="shareCloseBtn" aria-label="Đóng">&times;</span>
+            <div class="share-card-header">
+                <div class="share-header-icon">
+                    <i class="fa-solid fa-heart"></i>
+                </div>
+                <h3>Chia Sẻ Yêu Thương</h3>
+                <p class="share-subtitle">Gửi tặng trang nhật ký này đến người ấy nhé ❤️</p>
+            </div>
+            <div class="share-card-body">
+                <!-- Vùng hiển thị mã QR -->
+                <div class="qr-container">
+                    <img id="qrImage" src="" alt="Mã QR liên kết" style="display: none;">
+                    <div class="qr-placeholder" id="qrPlaceholder">
+                        <i class="fa-solid fa-qrcode animate-pulse"></i>
+                        <p>Đang tạo mã QR...</p>
+                    </div>
+                </div>
+                
+                <!-- Hộp sao chép liên kết -->
+                <div class="share-link-group">
+                    <input type="text" id="shareLinkInput" readonly placeholder="Đang lấy liên kết...">
+                    <button id="copyLinkBtn" aria-label="Sao chép liên kết">
+                        <i class="fa-solid fa-copy"></i>
+                        <span>Sao chép</span>
+                    </button>
+                </div>
+                <p class="copy-toast" id="copyToast"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal phóng to ảnh -->
+    <div class="lightbox-modal" id="lightboxModal" aria-hidden="true" role="dialog">
+        <span class="lightbox-close" id="lightboxCloseBtn" aria-label="Đóng">&times;</span>
+        <div class="lightbox-content">
+            <img class="lightbox-img" id="lightboxImg" src="" alt="Ảnh phóng to">
+            <p class="lightbox-caption" id="lightboxCaption"></p>
+        </div>
+    </div>
+
+    <!-- Custom Script -->
+    <script src="app.js?v=1.0.2"></script>
+</body>
+
+</html>
